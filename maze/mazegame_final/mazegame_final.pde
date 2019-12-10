@@ -5,19 +5,20 @@
 // If you found that gidAnimation is not compatiable in your Processing, you can drag it from file "code" into the Processing directly
 // Don't mute your computer! Turn up your volume, my warriors!
 // Function: W/A/S/D buttons for direction controls, and Space button for pause
-// Rules: Three levels of maze are designed with increasing difficulties and challenges with each level. 
-// When the little girl touches the wall, please ready for being scared.
+// Rules: Three levels of maze are designed with increasing difficulties and challenges with each level
+// When the little girl touches the wall, please be ready for being scared
 
 // Inspirations: 
-// I have been dreaming to create a game with Processing from the day 1 I took this class.
+// I have been dreaming to create a game with Processing from the day 1 I took this class
 // I realize that a maze game can perfectly combine shapes, mechanics, and sound together
 // It will make it even more interesting if it builds on a horror theme with heart-beating maze running and jump scare after the failure
 
 // Obstacles and challenges:
 // 1. How to use library?
 // 2. How to work with sound and music in Processing?
-// 3. How to create walls with the testing if object touches the boundries
-// 4. HOW TO DEBUG SO MANY ERRORS IN THIS GAME!!!!!!!!!!!!!!
+// 3. How to create walls with the testing if object touches the boundrie?
+// 4. How to add difficulty and design to make it more fun to play?
+// 5. HOW TO DEBUG SO MANY ERRORS IN THIS GAME!!!!!!!!!!!!!!
 
 // Reference:
 // <How to Install a Contributed Library> https://github.com/processing/processing/wiki/How-to-Install-a-Contributed-Library
@@ -25,7 +26,6 @@
 // <SoundFile \ Language (API) \ Processing 3+> https://poanchen.github.io/blog/2016/11/15/how-to-add-background-music-in-processing-3.0
 // <10: Intro to Images - Processing Tutorial by The Coding Train> https://www.youtube.com/watch?v=-f0WEitGmiw
 // <Simple Maze game example> https://processing.org/discourse/beta/num_1263549365.html
-
 
 
 //import two libraries
@@ -48,15 +48,18 @@ int figrun;
 
 void setup() {
   size(1680, 1050);
-  //load pictures from the file "data"
-  win = loadImage("win.jpg");
-  for (int i=1; i<5; i++) {
+  // load the victory pictures from the file "data"
+  win = loadImage("win.jpg"); 
+  for (int i=1; i<5; i++) { // load the ghosts faces
     xr[i] = loadImage("xr"+i+".jpg");
     xr[i].resize(1680, 1050);
   }
+  
+  // load the horrible fonts
   myfont=createFont("np.ttf", 100); 
   textFont(myfont);
   win.resize(1680, 1050);
+  
   //load music from the file "data"
   minim = new Minim(this);
   player = minim.loadFile("bg.mp3");
@@ -64,22 +67,27 @@ void setup() {
   xrminim = new Minim(this);
   xrmp3 = xrminim.loadFile("xr.mp3");
   player.loop();
-
+  
+  // keep the music play over and over again
   xrmp3.loop();
   xrmp3.rewind();
   xrmp3.pause();
 
+  // beginning image
   bg1 = loadImage("bg1.jpg");
   bg1.resize(1680, 1050);
   ellipseMode(CENTER);
 
   imageMode(CENTER); 
-  figrun=3;
+  figrun=3; // display the third fig image
 
+  // load fig image
   for (int i=1; i<5; i++) {
     myAnimation[i] =  new Gif(this, "walk_"+i+".gif");
   }
 }
+
+// option page
 int mode = 0;
 int yx=41;
 int yy=917;
@@ -94,14 +102,14 @@ void draw() {
   background(0);
   //first level
   if (mode==0) { 
-    xrmp3.rewind();
-    xrmp3.pause();
-    xri= int(random(1, 5));
+    xrmp3.rewind(); // BGM starts
+    xrmp3.pause(); // BGM stops
+    xri= int(random(1, 5)); //random ghosts faces
     run = true;
     showBackground();
 
     fill(255, 0, 0);
-    //menu page
+    //menu page for level1
     if (isCollisionWithRect(463, 163, 826, 114, mouseX, mouseY, 2, 2)) {
       textSize(88);
       text("first level", 763, 252);
@@ -109,7 +117,8 @@ void draw() {
       textSize(77);
       text("first level", 763, 252);
     }
-
+    
+    //menu page for level2
     if (isCollisionWithRect(462, 407, 838, 121, mouseX, mouseY, 2, 2)) {
       textSize(88);
       text("second level", 763, 509);
@@ -118,6 +127,7 @@ void draw() {
       text("second level", 763, 509);
     }
 
+    //menu page for level3
     if (isCollisionWithRect(432, 640, 879, 133, mouseX, mouseY, 2, 2)) {
       textSize(88);
       text("third level", 763, 745);
@@ -125,6 +135,8 @@ void draw() {
       textSize(77);
       text("third level", 763, 745);
     }
+    
+    // level1
   } else if (mode==1) {
 
     noStroke();
@@ -160,6 +172,7 @@ void draw() {
     rect(1499, 230, 165, 239);
     rect(77, 65, 148, 239);
     fill(252, 252, 0);
+    
     //speed up area
     text(">>>>>>>>>>>>>>>>>", 559, 474);
     text("<<<<<<<<<<<<<<<<<", 554, 671);
@@ -222,21 +235,22 @@ void run() {
     if (mode==1) {
       sd = 3;
     }
-    if (mode==2 ) {
+    if (mode==2 ) {  // test for the speed up area
       if (yx>375&&375+121<yx&&yy>304&&yy<700) {
         sd = 6;
       } else {
         sd = 3;
       }
     }
-    if (mode==3) {
+    if (mode==3) { // test for the speed up area
       if (yx>375&&375+121<yx&&yy>304&&yy<700) {
         sd = 6;
       } else {
         sd = 3;
       }
     }
-
+    
+    // test for the keyboard directions
     if (key == 'a') {
       yx-=sd;
       figrun=2;
@@ -255,6 +269,7 @@ void run() {
     }
   }
 
+  // test if it's out of the boundary
   if (runEnd(yx, yy)==-1) {
     if (xrmp3.isPlaying()) {
       xrmp3.pause(); 
@@ -295,7 +310,7 @@ void run() {
 
     run=false;
 
-
+    // Again button
     if (isCollisionWithRect(984,809,374,99, mouseX, mouseY, 2, 2)) {
       textSize(130);
       text("AGAIN", 995, 890);
@@ -304,6 +319,7 @@ void run() {
       text("AGAIN", 995, 890);
     }
     
+    // Menu button
        if (isCollisionWithRect(329,804,350,95, mouseX, mouseY, 2, 2)) {
       textSize(130);
       text("MENU", 330, 890);
